@@ -1,18 +1,23 @@
-function textContent(rootNode) {
-    if ('textContent' in document.createTextNode(''))
-      return rootNode.textContent;
-  
-    var childNodes = rootNode.childNodes,
-        len = childNodes.length,
-        result = '';
-    
-    for (var i = 0; i < len; i++) {
-      if (childNodes[i].nodeType === 3)
-        result += childNodes[i].nodeValue;
-      else if (childNodes[i].nodeType === 1) 
-        result += textContent(childNodes[i]);
-    }
-  
-    return result;
+const chai = require('chai')
+global.expect = chai.expect
+const fs = require('fs')
+const jsdom = require('mocha-jsdom')
+const path = require('path')
+const babel = require('babel-core');
+
+const html = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf-8')
+
+const babelResult = babel.transformFileSync(
+  path.resolve(__dirname, '..', 'index.js'), {
+    presets: ['env']
   }
-  
+);
+
+const src = babelResult.code
+
+jsdom({
+  html, src
+});
+let newHeader = document.createElement('h1');
+newHeader.id = 'victory';
+newHeader.textContent = 'YOUR-NAME is the champion';
